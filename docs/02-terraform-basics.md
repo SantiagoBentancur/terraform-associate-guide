@@ -79,6 +79,40 @@ When authenticating the AWS provider, you have several options:
 * **Shared Config File (Recommended for Local Dev):** Configuring credentials via the **AWS CLI** (`aws configure`). Terraform will default to the standard `$HOME/.aws/` directory.
 * **Hardcoding in configuration:** Do not place access keys directly in `.tf` files or commit them to version control.
 
+### Multiple Provider Configurations
+
+This is an advanced provider topic. Terraform can use multiple configurations of the same provider. Common use cases include deploying to multiple AWS regions or using different AWS accounts and roles.
+
+For a given provider local name, Terraform can have at most one default configuration: the `provider` block without an `alias`. You cannot declare two independent unaliased configurations for the same local provider name. Every additional configuration must have its own unique `alias`.
+
+One configuration should normally remain unaliased so that it acts as the default. Resources that need another configuration select an alias through the `provider` meta-argument.
+
+#### Why Keep a Default Configuration?
+
+If all configurations for a provider have aliases, there is no explicitly configured default. Terraform then treats an empty provider configuration as the default.
+
+```hcl
+provider "aws" {
+  region = "us-east-1"
+}
+
+provider "aws" {
+  alias  = "west"
+  region = "us-west-2"
+}
+
+resource "aws_s3_bucket" "east_logs" {
+  bucket_prefix = "east-logs-"
+}
+
+resource "aws_s3_bucket" "west_logs" {
+  provider      = aws.west
+  bucket_prefix = "west-logs-"
+}
+```
+
+The `east_logs` resource uses the default provider. The `west_logs` resource selects the aliased provider using the `provider` meta-argument.
+
 ---
 ## Terraform Settings Block (`terraform {}`)
 
@@ -305,44 +339,6 @@ Here, `terraform_data.source.output` means:
 * `output`: Attribute exported by that resource
 
 Terraform also uses references to infer dependencies. Because `terraform_data.copy` reads an attribute from `terraform_data.source`, Terraform handles `source` before `copy`.
-
----
-
-## Multiple Provider Configurations
-
-Terraform can use multiple configurations of the same provider. Common use cases include deploying to multiple AWS regions or using different AWS accounts and roles.
-
-For a given provider local name, Terraform can have at most one default configuration: the `provider` block without an `alias`. You cannot declare two independent unaliased configurations for the same local provider name. Every additional configuration must have its own unique `alias`.
-
-One configuration should normally remain unaliased so that it acts as the default. Resources that need another configuration select an alias through the `provider` meta-argument.
-
-### Why Keep a Default Configuration?
-
-If all configurations for a provider have aliases, there is no explicitly configured default. Terraform then treats an empty provider configuration as the default.
-
-```hcl
-provider "aws" {
-  region = "us-east-1"
-}
-
-provider "aws" {
-  alias  = "west"
-  region = "us-west-2"
-}
-
-resource "aws_s3_bucket" "east_logs" {
-  bucket_prefix = "east-logs-"
-}
-
-resource "aws_s3_bucket" "west_logs" {
-  provider      = aws.west
-  bucket_prefix = "west-logs-"
-}
-```
-
-The `east_logs` resource uses the default provider. The `west_logs` resource selects the aliased provider using the `provider` meta-argument.
-
----
 
 ## Common Project Layout and Comments
 
