@@ -30,6 +30,15 @@ During `terraform init`, Terraform reads the provider requirements from the conf
 
 ![Annotated anatomy of an AWS provider page in the Terraform Registry](../assets/terraform-registry-provider-anatomy.png)
 
+### Provider Tiers
+
+| Type | Description |
+| :--- | :--- |
+| **Official** | Owned and maintained by HashiCorp. |
+| **Partner / Partner Premier** | Written and maintained by a third-party technology partner and approved through HashiCorp's partner program. |
+| **Community** | Owned and maintained by individual contributors. |
+| **Archived** | An Official or Partner provider that is no longer maintained. |
+
 ### Declaring and Configuring a Provider
 
 Provider **requirements** and provider **configurations** have different purposes:
@@ -61,17 +70,6 @@ resource "aws_s3_bucket" "example" {
 ```
 
 In this example, `required_providers` explicitly tells Terraform to install `hashicorp/aws` at a version allowed by `~> 6.0`, while `provider "aws"` configures its AWS region. The `aws_` prefix in `aws_s3_bucket` associates that resource type with the local provider name `aws`.
-
-### Provider Tiers
-
-| Type | Description |
-| :--- | :--- |
-| **Official** | Owned and maintained by HashiCorp. |
-| **Partner / Partner Premier** | Written and maintained by a third-party technology partner and approved through HashiCorp's partner program. |
-| **Community** | Owned and maintained by individual contributors. |
-| **Archived** | An Official or Partner provider that is no longer maintained. |
-
-The syntax and other uses of `required_providers` are covered in [Terraform Settings Block](#terraform-settings-block-terraform-).
 
 ### AWS Provider Source Credentials
 
