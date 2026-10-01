@@ -1,6 +1,6 @@
 # Terraform Basics
 
-Providers, configuration blocks, types, variables, outputs, and project structure.
+Providers, configuration blocks, resources and references, types, variables, outputs, and project structure.
 
 ## Providers
 
@@ -28,7 +28,7 @@ During `terraform init`, Terraform reads the provider requirements from the conf
 
 > **Exam Tip — Provider Installation Path:** For a normally initialized working directory, Terraform stores installed provider packages under `.terraform/providers`, organized by source address, version, and target platform. An AWS provider path looks similar to `.terraform/providers/registry.terraform.io/hashicorp/aws/<VERSION>/<OS_ARCH>/`. Terraform manages this directory automatically; do not edit or commit it. A configured shared plugin cache or a custom Terraform data directory can change where the underlying files are stored.
 
-![Annotated anatomy of an AWS provider page in the Terraform Registry](assets/terraform-registry-provider-anatomy.png)
+![Annotated anatomy of an AWS provider page in the Terraform Registry](../assets/terraform-registry-provider-anatomy.png)
 
 ### Declaring and Configuring a Provider
 
@@ -237,42 +237,6 @@ Review the resulting lock-file diff and test the provider upgrade before committ
 
 ---
 
-## Multiple Provider Configurations
-
-Terraform can use multiple configurations of the same provider. Common use cases include deploying to multiple AWS regions or using different AWS accounts and roles.
-
-For a given provider local name, Terraform can have at most one default configuration: the `provider` block without an `alias`. You cannot declare two independent unaliased configurations for the same local provider name. Every additional configuration must have its own unique `alias`.
-
-One configuration should normally remain unaliased so that it acts as the default. Resources that need another configuration select an alias through the `provider` meta-argument.
-
-### Why Keep a Default Configuration?
-
-If all configurations for a provider have aliases, there is no explicitly configured default. Terraform then treats an empty provider configuration as the default.
-
-```hcl
-provider "aws" {
-  region = "us-east-1"
-}
-
-provider "aws" {
-  alias  = "west"
-  region = "us-west-2"
-}
-
-resource "aws_s3_bucket" "east_logs" {
-  bucket_prefix = "east-logs-"
-}
-
-resource "aws_s3_bucket" "west_logs" {
-  provider      = aws.west
-  bucket_prefix = "west-logs-"
-}
-```
-
-The `east_logs` resource uses the default provider. The `west_logs` resource selects the aliased provider using the `provider` meta-argument.
-
----
-
 ## Resource Blocks and References
 
 A **resource** is a primary building block in Terraform. It represents a managed object whose lifecycle Terraform can create, update, track, or destroy. This may be physical infrastructure, such as an EC2 instance, or a logical object, such as an IAM policy, DNS record, GitHub repository, or `terraform_data` resource.
@@ -343,6 +307,42 @@ Here, `terraform_data.source.output` means:
 * `output`: Attribute exported by that resource
 
 Terraform also uses references to infer dependencies. Because `terraform_data.copy` reads an attribute from `terraform_data.source`, Terraform handles `source` before `copy`.
+
+---
+
+## Multiple Provider Configurations
+
+Terraform can use multiple configurations of the same provider. Common use cases include deploying to multiple AWS regions or using different AWS accounts and roles.
+
+For a given provider local name, Terraform can have at most one default configuration: the `provider` block without an `alias`. You cannot declare two independent unaliased configurations for the same local provider name. Every additional configuration must have its own unique `alias`.
+
+One configuration should normally remain unaliased so that it acts as the default. Resources that need another configuration select an alias through the `provider` meta-argument.
+
+### Why Keep a Default Configuration?
+
+If all configurations for a provider have aliases, there is no explicitly configured default. Terraform then treats an empty provider configuration as the default.
+
+```hcl
+provider "aws" {
+  region = "us-east-1"
+}
+
+provider "aws" {
+  alias  = "west"
+  region = "us-west-2"
+}
+
+resource "aws_s3_bucket" "east_logs" {
+  bucket_prefix = "east-logs-"
+}
+
+resource "aws_s3_bucket" "west_logs" {
+  provider      = aws.west
+  bucket_prefix = "west-logs-"
+}
+```
+
+The `east_logs` resource uses the default provider. The `west_logs` resource selects the aliased provider using the `provider` meta-argument.
 
 ---
 
