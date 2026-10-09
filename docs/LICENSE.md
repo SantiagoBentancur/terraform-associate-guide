@@ -14,6 +14,6 @@ CC BY 4.0 permits sharing and adaptation, including commercial use. When sharing
 
 Suggested attribution for an adaptation:
 
-> Adapted from [Terraform Associate: From Theory to Practice](https://github.com/SantiagoBentancur/terraform_ta_004) by Santiago Bentancur. Copyright © 2026 Santiago Bentancur. Licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Changes: describe your modifications here.
+> Adapted from [Terraform Associate: From Theory to Practice](https://github.com/SantiagoBentancur/terraform-associate-guide) by Santiago Bentancur. Copyright © 2026 Santiago Bentancur. Licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Changes: describe your modifications here.
 
 For an unchanged copy, use “From” instead of “Adapted from” and state that no changes were made. This example is a suggested format, not an additional license restriction. The linked legal code governs reuse.
