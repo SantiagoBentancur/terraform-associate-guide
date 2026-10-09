@@ -41,7 +41,7 @@ terraform plan
 
 ## Prerequisites
 
-* Review [Sensitive Input Variables and Outputs](../../README.md#sensitive-input-variables-and-outputs) and [Ephemeral Values and Write-Only Arguments](../../README.md#ephemeral-values-and-write-only-arguments).
+* Review [Sensitive Input Variables and Outputs](../../docs/05-configuration.md#sensitive-input-variables-and-outputs) and [Ephemeral Values and Write-Only Arguments](../../docs/05-configuration.md#ephemeral-values-and-write-only-arguments).
 * Use Terraform 1.11 or later.
 * Configure AWS credentials with SSM Parameter Store permissions.
 

@@ -53,7 +53,7 @@ terraform plan
 
 ## Prerequisites
 
-* Review [Terraform Modules](../../README.md#terraform-modules), [Module Sources](../../README.md#module-sources), and [The Provider Rule](../../README.md#the-provider-rule-exam-trap).
+* Review [Terraform Modules](../../docs/06-modules.md#terraform-modules), [Module Sources](../../docs/06-modules.md#module-sources), and [The Provider Rule](../../docs/06-modules.md#the-provider-rule-exam-trap).
 * Configure AWS credentials with VPC, subnet, route-table, security-group, and EC2 permissions.
 
 > **Cost Warning:** This lab creates an EC2 instance. Run the cleanup procedure when finished.

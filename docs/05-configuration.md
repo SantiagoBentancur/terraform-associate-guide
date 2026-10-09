@@ -1,6 +1,6 @@
 # Terraform Configuration
 
-Expressions, functions, collections, repetition, lifecycle rules, validation, checks, tests, provisioners, and security-related configuration.
+Expressions, functions, collections, repetition, lifecycle rules, validation, checks, provisioners, and security-related configuration.
 
 ## String Templates and Interpolation
 
@@ -28,25 +28,6 @@ input = terraform_data.source.output
 Local values, introduced in [Local Values](#local-values-locals), and other expressions can also be inserted into string templates.
 
 ---
-## Input Variable Validation
-
-You can enforce rules on input variable values. If a known input fails its validation rule, Terraform reports an error rather than creating a normal execution plan. The example uses `length()` and `substr()`, which are introduced in [Essential Terraform Functions and Expressions](#essential-terraform-functions-and-expressions).
-
-```hcl
-variable "image_id" {
-  type = string
-
-  validation {
-    condition     = length(var.image_id) > 4 && substr(var.image_id, 0, 4) == "ami-"
-    error_message = "The image_id value must start with \"ami-\" and include an identifier after the prefix."
-  }
-}
-```
-
-This introductory condition validates the required prefix, but it does not prove that the value identifies an AMI that exists in AWS. The provider verifies the identifier when Terraform uses it in an AWS operation.
-
----
-
 ## Local Values (`locals`)
 
 A `locals` block assigns a name to an expression or value so it can be reused throughout your Terraform configuration without repeating the same logic.
@@ -186,52 +167,6 @@ In the example, `data.aws_ami.amazon_linux.id` reads the `id` attribute returned
 
 ---
 
-## Sensitive Input Variables and Outputs
-
-Terraform uses the `sensitive` argument to hide a value from normal CLI and UI output.
-
-This section builds on the output declaration introduced in [Variables and Output Values](02-terraform-basics.md#variables-and-output-values). Commands for querying outputs are covered in [Querying Outputs](03-core-workflow.md#querying-outputs).
-
-```hcl
-variable "database_password" {
-  description = "Password used by the database administrator"
-  type        = string
-  sensitive   = true
-}
-
-output "database_password" {
-  description = "Database administrator password"
-  value       = var.database_password
-  sensitive   = true
-}
-```
-
-Terraform displays sensitive values as `(sensitive value)` in plans and normal output. Expressions derived from a sensitive value usually inherit the sensitive marking.
-
-Requesting one sensitive output explicitly with `terraform output database_password` displays its real value. The `-raw` and `-json` output modes can also reveal sensitive values, so do not treat the sensitive marker as an access-control mechanism.
-
-### Critical Limitation
-
-`sensitive = true` provides **redaction, not storage protection**:
-
-* In the human-readable output from `terraform plan`, Terraform replaces the value with `(sensitive value)` instead of displaying the plaintext value.
-* In a saved plan file created with `terraform plan -out=<filename>`, Terraform still stores the real value. Treat saved plan files as sensitive artifacts.
-* In `terraform.tfstate`, Terraform normally stores the real value in plaintext even when it is marked sensitive. The sensitive flag only tells Terraform to redact the value when presenting it.
-* Machine-readable output, such as `terraform show -json`, can expose sensitive values from a plan or state file. Do not publish it without protecting or sanitizing it.
-
-| Mechanism | Visible in Normal Plan Text? | Real Value Stored in Saved Plan or State? |
-| :--- | :---: | :---: |
-| `sensitive = true` | No—shown as `(sensitive value)` | Yes |
-| `ephemeral = true` | May require `sensitive = true` for redaction | No |
-| `sensitive = true` and `ephemeral = true` | No | No |
-| Provider write-only argument | No | No |
-
-Use `nonsensitive()` only when intentionally removing the sensitive marking from data that is genuinely safe to reveal. Terraform functions are introduced in [Essential Terraform Functions and Expressions](#essential-terraform-functions-and-expressions).
-
-> **Note:** Ephemeral values are introduced here only for comparison. We will discuss them in detail in a future section.
-
----
-
 ## Essential Terraform Functions and Expressions
 
 Terraform includes built-in functions that transform and combine values. Terraform configuration cannot define its own functions, although providers can expose provider-defined functions.
@@ -313,6 +248,8 @@ After learning [The `count` Meta-Argument](#the-count-meta-argument) and [Splat 
 
 #### String and Conversion Functions
 
+* **`substr(string, offset, length)`**: Extracts a substring starting at a zero-based position for the specified number of characters.
+  * *Example:* `substr("ami-12345", 0, 4)` returns `"ami-"`.
 * **`lower(string)`**: Converts letters in a string to lowercase, which is useful for services that require lowercase names.
 * **`upper(string)`**: Converts letters in a string to uppercase.
   * *Example:* `upper("api")` returns `"API"`.
@@ -801,6 +738,25 @@ resource "aws_autoscaling_group" "app_asg" {
 
 ---
 
+## Input Variable Validation
+
+You can enforce rules on input variable values. If a known input fails its validation rule, Terraform reports an error rather than creating a normal execution plan. The example uses `length()` and `substr()`, covered in [Essential Terraform Functions and Expressions](#essential-terraform-functions-and-expressions).
+
+```hcl
+variable "image_id" {
+  type = string
+
+  validation {
+    condition     = length(var.image_id) > 4 && substr(var.image_id, 0, 4) == "ami-"
+    error_message = "The image_id value must start with \"ami-\" and include an identifier after the prefix."
+  }
+}
+```
+
+This introductory condition validates the required prefix, but it does not prove that the value identifies an AMI that exists in AWS. The provider verifies the identifier when Terraform uses it in an AWS operation.
+
+---
+
 ## Custom Conditions (`precondition` & `postcondition`)
 
 `precondition` and `postcondition` blocks are lifecycle conditions that validate assumptions about resources, data sources, and supported ephemeral resources.
@@ -889,54 +845,6 @@ check "application_health" {
 ```
 
 If the assertion fails, Terraform reports a warning and continues the plan or apply. Use a precondition or postcondition instead when a failed condition must block the operation.
-
----
-
-## Terraform Tests
-
-Terraform's native testing framework lets module authors describe test runs in files ending with `.tftest.hcl`. Store them in the module directory or, preferably, its default `tests/` directory:
-
-```text
-modules/network/
-├── main.tf
-├── variables.tf
-├── outputs.tf
-└── tests/
-    └── network.tftest.hcl
-```
-
-A test file contains one or more `run` blocks. Each run can execute a plan or apply and evaluate `assert` blocks:
-
-```hcl
-run "valid_environment" {
-  command = plan
-
-  variables {
-    environment = "development"
-  }
-
-  assert {
-    condition     = var.environment == "development"
-    error_message = "The test must use the development environment."
-  }
-}
-```
-
-Run the tests from the root directory of the module or root configuration being tested:
-
-```bash
-terraform test
-```
-
-Use `terraform test -filter=tests/network.tftest.hcl` to select one test file. Tests that use apply mode can create real infrastructure and costs, so use controlled test environments and review cleanup behavior.
-
-| Command | Purpose |
-| :--- | :--- |
-| `terraform validate` | Check syntax and internal configuration consistency |
-| `terraform plan` | Preview changes for the current configuration and state |
-| `terraform test` | Execute `.tftest.hcl` test runs and assertions |
-
-> **Exam Tip:** Creating `.tftest.hcl` files with `run` and `assert` blocks does not make normal `validate`, `plan`, or `apply` commands execute the test suite. Use `terraform test`.
 
 ---
 
@@ -1083,62 +991,53 @@ Preferred sources include:
 * HashiCorp Vault or a cloud secrets manager
 * Ephemeral values and provider-supported write-only arguments, explained in [Ephemeral Values and Write-Only Arguments](#ephemeral-values-and-write-only-arguments)
 
-> **Important:** Adding a secret file to `.gitignore` prevents Git from tracking it, but does not stop Terraform from storing its value in state.
+> **Important:** [Ignoring a file in Git](06-modules.md#terraform-and-gitignore) does not stop Terraform from storing its values in state. See [Security Risk of Storing Terraform State in Git](04-state.md#security-risk-of-storing-terraform-state-in-git).
 
 ---
 
-## Terraform and `.gitignore`
+## Sensitive Input Variables and Outputs
 
-A `.gitignore` file prevents Git from tracking local Terraform files that should stay out of the repository.
+Terraform uses the `sensitive` argument to hide a value from normal CLI and UI output.
 
-### Common Terraform `.gitignore`
-```gitignore
-# Local Terraform provider/plugins directory
-.terraform/
+This section builds on the output declaration introduced in [Variables and Output Values](02-terraform-basics.md#variables-and-output-values). Commands for querying outputs are covered in [Querying Outputs](03-core-workflow.md#querying-outputs).
 
-# Terraform state files
-*.tfstate
-*.tfstate.*
+```hcl
+variable "database_password" {
+  description = "Password used by the database administrator"
+  type        = string
+  sensitive   = true
+}
 
-# Crash logs
-crash.log
-crash.*.log
-
-# Sensitive variable files
-*.tfvars
-*.tfvars.json
-
-# Local override files
-override.tf
-override.tf.json
-*_override.tf
-*_override.tf.json
-
-# CLI config files
-.terraformrc
-terraform.rc
+output "database_password" {
+  description = "Database administrator password"
+  value       = var.database_password
+  sensitive   = true
+}
 ```
 
-> **Important:** If your team uses non-sensitive shared variable files, commit an example file such as `dev.tfvars.example`, not the real secret file.
+Terraform displays sensitive values as `(sensitive value)` in plans and normal output. Expressions derived from a sensitive value usually inherit the sensitive marking.
 
----
+Requesting one sensitive output explicitly with `terraform output database_password` displays its real value. The `-raw` and `-json` output modes can also reveal sensitive values, so do not treat the sensitive marker as an access-control mechanism.
 
-## Security Risk of Storing Terraform State in Git
+### Critical Limitation
 
-The Terraform state file is sensitive and should not be stored in Git.
+`sensitive = true` provides **redaction, not storage protection**:
 
-### Why State Is Sensitive
-`terraform.tfstate` may contain:
-* Resource IDs
-* IP addresses
-* Database endpoints
-* IAM role details
-* Secret values generated or returned by providers
-* Plaintext values from some sensitive resource attributes
+* In the human-readable output from `terraform plan`, Terraform replaces the value with `(sensitive value)` instead of displaying the plaintext value.
+* In a saved plan file created with `terraform plan -out=<filename>`, Terraform still stores the real value. Treat saved plan files as sensitive artifacts.
+* In `terraform.tfstate`, Terraform normally stores the real value in plaintext even when it is marked sensitive. The sensitive flag only tells Terraform to redact the value when presenting it.
+* Machine-readable output, such as `terraform show -json`, can expose sensitive values from a plan or state file. Do not publish it without protecting or sanitizing it.
 
-Even if your `.tf` files do not show a password directly, Terraform state may still contain the real value after creation.
+| Mechanism | Visible in Normal Plan Text? | Real Value Stored in Saved Plan or State? |
+| :--- | :---: | :---: |
+| `sensitive = true` | No—shown as `(sensitive value)` | Yes |
+| `ephemeral = true` | May require `sensitive = true` for redaction | No |
+| `sensitive = true` and `ephemeral = true` | No | No |
+| Provider write-only argument | No | No |
 
-> **Golden Rule:** Terraform code can go in Git. Terraform state should go in a secure remote backend.
+Use `nonsensitive()` only when intentionally removing the sensitive marking from data that is genuinely safe to reveal. Terraform functions are introduced in [Essential Terraform Functions and Expressions](#essential-terraform-functions-and-expressions).
+
+> **Note:** Ephemeral values are introduced here only for comparison. We will discuss them in detail in a future section.
 
 ---
 

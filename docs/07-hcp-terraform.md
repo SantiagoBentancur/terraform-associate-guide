@@ -1,6 +1,6 @@
 # Vault, HCP Terraform, and Terraform Enterprise
 
-Vault integration, HCP Terraform workspaces, runs, governance, and collaboration platforms.
+Earlier chapters explain how to write, organize, and protect Terraform configurations. This chapter extends that workflow to shared environments: Vault manages access to secrets, while HCP Terraform and Terraform Enterprise coordinate runs, state, permissions, and governance. These tools can work together, but each serves a different purpose.
 
 ## HashiCorp Vault Basics and Why Vault Matters
 
@@ -66,13 +66,20 @@ locals {
 }
 ```
 
-Configure authentication outside the Terraform code:
+To continue the local development example, keep the Vault development server running and use the same shell where you exported `VAULT_ADDR` and `VAULT_TOKEN`. Save the Terraform configuration above in a separate working directory, then run:
 
 ```bash
-export VAULT_ADDR="https://vault.example.com"
-export VAULT_TOKEN="<short-lived-token>"
+terraform init
 terraform plan
 ```
+
+The data source reads the `secret/database` entry created earlier. No production Vault endpoint is needed for this exercise. When finished, stop the development server and remove its credentials from that shell:
+
+```bash
+unset VAULT_ADDR VAULT_TOKEN
+```
+
+For a production integration, configure authentication outside the Terraform code using your organization's Vault address and a suitably scoped identity. The development root token is only for the local example.
 
 ### Important State Warning
 
@@ -118,6 +125,14 @@ Organization
 | Execution | Usually runs locally | Runs remotely by default |
 | Collaboration | Limited by itself | Includes permissions, run history, policies, and integrations |
 
+### Execution Modes
+
+* **Remote execution:** HCP Terraform runs Terraform in a temporary remote environment, providing a consistent execution environment. Many organizations use this as their standard mode.
+* **Local execution:** Terraform runs on the user's machine or CI worker while HCP Terraform stores the remote state.
+* **Agent execution:** HCP Terraform agents execute runs inside private, isolated, or on-premises networks that the hosted runners cannot reach.
+
+A workspace can inherit its execution mode from its project or explicitly select a supported mode. Therefore, the workspace setting may appear as **Project Default** rather than always being set directly to Remote.
+
 ### Run Workflows
 
 HCP Terraform supports three primary workflows:
@@ -127,22 +142,6 @@ HCP Terraform supports three primary workflows:
 * **API-driven:** Automation uploads configuration versions and controls runs through the HCP Terraform API.
 
 In the VCS workflow, the plan is associated with the exact Git commit that produced it. By default, a successful plan waits for an authorized user to confirm the apply; a workspace can also be configured for automatic apply. Every apply is based on a completed plan. Standard runs are queued and processed in order within each workspace so that concurrent operations do not update the same state simultaneously. Plan-only or speculative runs are an exception: they can run without waiting for the normal workspace run queue and can never be applied.
-
-### Execution Modes
-
-* **Remote execution:** HCP Terraform runs Terraform in a temporary remote environment, providing a consistent execution environment. Many organizations use this as their standard mode.
-* **Local execution:** Terraform runs on the user's machine or CI worker while HCP Terraform stores the remote state.
-* **Agent execution:** HCP Terraform agents execute runs inside private, isolated, or on-premises networks that the hosted runners cannot reach.
-
-A workspace can inherit its execution mode from its project or explicitly select a supported mode. Therefore, the workspace setting may appear as **Project Default** rather than always being set directly to Remote.
-
-### Air-Gapped Terraform Enterprise
-
-An **air-gapped environment** is an isolated network with no direct Internet access. HCP Terraform is a hosted SaaS product and therefore is not deployed inside an air-gapped network. Organizations that require customer-controlled or disconnected infrastructure can self-host Terraform Enterprise in a restricted or air-gapped environment.
-
-Air-gapped deployments must make all required artifacts available inside the restricted network. This normally includes the Terraform Enterprise license and images, Terraform binaries, providers, modules, and any VCS or other services used during runs. Internal registries and mirrors replace public Internet sources. The exact installation and upgrade artifacts depend on the Terraform Enterprise version and deployment method; older Replicated installations use `.airgap` bundles, so that file format should not be treated as a universal requirement for every deployment.
-
-> **Exam Distinction:** Terraform Enterprise supports self-hosted and air-gapped deployment. HCP Terraform is managed and hosted by HashiCorp. An HCP Terraform agent can reach private infrastructure, but that is not the same as installing the HCP Terraform SaaS control plane in an air-gapped network.
 
 ### Connecting with the `cloud` Block
 
@@ -224,9 +223,9 @@ Common distractors:
 
 </details>
 
-### Plans, Collaboration, and Governance
+### Collaboration and Governance
 
-HCP Terraform has multiple editions, including Free and paid plans such as Essentials, Standard, and Premium. The editions provide different limits and capabilities. Core collaboration features are broadly available, while advanced governance, security, health, and scale capabilities are associated with particular editions. Always check the current plan comparison instead of assuming every feature is included in every plan.
+HCP Terraform adds shared controls and visibility around Terraform runs. Feature availability depends on the subscription; see [Editions and Pricing](#editions-and-pricing) for the commercial overview.
 
 Depending on the selected edition, HCP Terraform can provide:
 
@@ -237,6 +236,22 @@ Depending on the selected edition, HCP Terraform can provide:
 * Policy enforcement with Sentinel or OPA
 * Run tasks that integrate external security or compliance systems
 * Notifications, cost estimates, drift detection, and continuous validation
+
+### Sentinel Policy as Code
+
+**Sentinel** is HashiCorp's policy-as-code framework. HCP Terraform and Terraform Enterprise can evaluate Sentinel policies against the Terraform configuration, state, and generated plan **after `terraform plan` and before `terraform apply`**. This allows an organization to enforce rules before infrastructure changes are made.
+
+Common policies can require mandatory tags, restrict cloud regions or machine sizes, prevent public access, or require approved Terraform versions.
+
+Policies are grouped into **policy sets**, which can be assigned to selected workspaces or applied more broadly. Sentinel has three enforcement levels:
+
+| Enforcement Level | Result When the Policy Fails |
+| :--- | :--- |
+| **Advisory** | Reports the failure but allows the run to continue |
+| **Soft mandatory** | Blocks the run unless an authorized user overrides it; the override is recorded |
+| **Hard mandatory** | Blocks the run. It is not normally overridden at the individual-policy level, although an administrator can explicitly configure the containing policy set to permit authorized overrides. |
+
+> **Exam Tip:** Sentinel does not provision infrastructure. It is a governance checkpoint in the run workflow between the plan and apply stages. Sentinel availability and policy-set limits depend on the HCP Terraform edition.
 
 ### Automating Workspace Runs and External Checks
 
@@ -342,6 +357,14 @@ This makes Explorer the relevant exam answer when a question asks which HCP Terr
 
 Explorer requires sufficiently broad read access, such as organization-owner or **View all workspaces** access. Its query results can be eventually consistent, so very recent changes may take time to appear. See the official [Explorer documentation](https://developer.hashicorp.com/terraform/cloud-docs/workspaces/explorer).
 
+### Air-Gapped Terraform Enterprise
+
+An **air-gapped environment** is an isolated network with no direct Internet access. HCP Terraform is a hosted SaaS product and therefore is not deployed inside an air-gapped network. Organizations that require customer-controlled or disconnected infrastructure can self-host Terraform Enterprise in a restricted or air-gapped environment.
+
+Air-gapped deployments must make all required artifacts available inside the restricted network. This normally includes the Terraform Enterprise license and images, Terraform binaries, providers, modules, and any VCS or other services used during runs. Internal registries and mirrors replace public Internet sources. The exact installation and upgrade artifacts depend on the Terraform Enterprise version and deployment method; older Replicated installations use `.airgap` bundles, so that file format should not be treated as a universal requirement for every deployment.
+
+> **Exam Distinction:** Terraform Enterprise supports self-hosted and air-gapped deployment. HCP Terraform is managed and hosted by HashiCorp. An HCP Terraform agent can reach private infrastructure, but that is not the same as installing the HCP Terraform SaaS control plane in an air-gapped network.
+
 ### Editions and Pricing
 
 HCP Terraform offers Free and paid cloud editions. Paid editions provide progressively broader collaboration, governance, security, and lifecycle-management capabilities. Terraform Enterprise is the self-managed offering and uses contract pricing.
@@ -369,22 +392,6 @@ HCP Terraform usage-based billing is based on managed resources recorded in Terr
 * Contracted plans may use separately negotiated terms.
 
 > **Exam Focus:** Know that billing and plan selection occur at the organization level, paid editions generally build on lower editions, Resources Under Management (RUM) counts managed resource instances rather than workspaces or users, and Terraform Enterprise is the self-managed offering. Verify current commercial details instead of memorizing exact prices.
-
-### Sentinel Policy as Code
-
-**Sentinel** is HashiCorp's policy-as-code framework. HCP Terraform and Terraform Enterprise can evaluate Sentinel policies against the Terraform configuration, state, and generated plan **after `terraform plan` and before `terraform apply`**. This allows an organization to enforce rules before infrastructure changes are made.
-
-Common policies can require mandatory tags, restrict cloud regions or machine sizes, prevent public access, or require approved Terraform versions.
-
-Policies are grouped into **policy sets**, which can be assigned to selected workspaces or applied more broadly. Sentinel has three enforcement levels:
-
-| Enforcement Level | Result When the Policy Fails |
-| :--- | :--- |
-| **Advisory** | Reports the failure but allows the run to continue |
-| **Soft mandatory** | Blocks the run unless an authorized user overrides it; the override is recorded |
-| **Hard mandatory** | Blocks the run. It is not normally overridden at the individual-policy level, although an administrator can explicitly configure the containing policy set to permit authorized overrides. |
-
-> **Exam Tip:** Sentinel does not provision infrastructure. It is a governance checkpoint in the run workflow between the plan and apply stages. Sentinel availability and policy-set limits depend on the HCP Terraform edition.
 
 ### Key Exam Distinctions
 

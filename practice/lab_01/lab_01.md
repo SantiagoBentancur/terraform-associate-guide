@@ -39,7 +39,7 @@ terraform plan
 
 ## Prerequisites
 
-* Review [Providers](../../README.md#providers), [Variables and Output Values](../../README.md#variables-and-output-values), [Data Sources](../../README.md#data-sources-data-blocks), and [Output Values](../../README.md#output-values).
+* Review [Providers](../../docs/02-terraform-basics.md#providers), [Variables and Output Values](../../docs/02-terraform-basics.md#variables-and-output-values), [Data Sources](../../docs/05-configuration.md#data-sources-data-blocks), and [Output Values](../../docs/02-terraform-basics.md#output-values).
 * Configure AWS credentials outside Terraform with permission to create and terminate EC2 instances in `us-east-1`.
 
 > **Cost Warning:** This lab creates an EC2 instance. Complete the cleanup procedure when finished.

@@ -10,6 +10,8 @@ The goal is not to present a finished course or claim that every section is fina
 
 This is an AI-assisted project. I use OpenAI Codex as a collaborative tool to review documentation, identify inconsistencies, discuss alternatives, and help organize the material. I apply my own judgment to the suggestions, make the final decisions, implement the lab solutions, and validate the behavior. AI-generated output is treated as something to review, not as automatically correct.
 
+Read [how I use AI and review the results](docs/ai-workflow.md) for more detail about this process.
+
 ## Project status
 
 The labs are complete. The larger architecture checkpoints remain ongoing and will continue to evolve.
@@ -20,11 +22,13 @@ The labs are complete. The larger architecture checkpoints remain ongoing and wi
 | Lab 0 | Introductory | [Lab 0](practice/lab_00/lab_00.md) |
 | Checkpoint 1 | Ongoing | [Checkpoint 1](practice/checkpoint_01/checkpoint_01.md) |
 | Checkpoint 2 | Ongoing | [Checkpoint 2](practice/checkpoint_02/checkpoint_02.md) |
+| Mock exams | Drafts for review | [Three original practice sets](mock-exams/README.md) |
 
 ## Start here
 
-- [Terraform Study Guide](docs/README.md) — theory organized by topic.
+- [Study guide and topic index](docs/README.md) — read chapters in order or jump directly to a concept.
 - [Practical Exercises](practice/README.md) — labs and architecture checkpoints.
+- [Mock exams](mock-exams/README.md) — original, unofficial practice questions and explained answers.
 - [Repository structure](#repository-structure) — where to find each type of content.
 
 ## Repository structure
@@ -38,13 +42,15 @@ The labs are complete. The larger architecture checkpoints remain ongoing and wi
 │   ├── 02-terraform-basics.md
 │   ├── 03-core-workflow.md
 │   ├── 04-state.md
-│   ├── 05-modules.md
-│   ├── 06-configuration.md
-│   └── 07-hcp-terraform.md
+│   ├── 05-configuration.md
+│   ├── 06-modules.md
+│   ├── 07-hcp-terraform.md
+│   └── ai-workflow.md            # AI assistance, human decisions, and verification
 ├── practice/                    # Hands-on labs and checkpoints
 │   ├── README.md
 │   ├── lab_00/ through lab_16/
 │   └── checkpoint_01/ and checkpoint_02/
+├── mock-exams/                  # Original practice exams and answer keys
 └── assets/                      # Shared diagrams and images
 ```
 
@@ -64,3 +70,7 @@ Most labs are independent. Start with Lab 0 for the Terraform CLI workflow, then
 ## Collaboration and feedback
 
 The project is built with iterative human review and AI-assisted research. Feedback, corrections, and suggestions are welcome through GitHub issues or pull requests.
+
+## License and attribution
+
+Terraform code, scripts, and embedded code examples use the [MIT License](LICENSE). Original documentation uses [CC BY 4.0](docs/LICENSE.md), so you can share and adapt it with attribution to Santiago Bentancur, a source and license link, and an indication of changes. Third-party material retains its original rights and terms.

@@ -4,7 +4,7 @@ The command-line workflow, plans, execution plans, outputs, targeting, debugging
 
 ## Core CLI Commands
 
-* **`terraform init`**: Prepares a Terraform working directory. It initializes the backend and installs the required providers and modules in the hidden `.terraform` directory. Modules are covered in [Terraform Modules](05-modules.md#terraform-modules).
+* **`terraform init`**: Prepares a Terraform working directory. It initializes the backend and installs the required providers and modules in the hidden `.terraform` directory. Modules are covered in [Terraform Modules](06-modules.md#terraform-modules).
   * **`terraform init -upgrade`**: Reconsiders provider and module selections and chooses the newest versions allowed by the configured constraints. For providers, it updates `.terraform.lock.hcl`; review the lock-file diff and the next plan before committing an upgrade. See [Dependency Lock File](02-terraform-basics.md#dependency-lock-file-terraformlockhcl).
 * **`terraform validate`**: Checks the configuration for syntax errors and internal consistency without accessing remote state or provider APIs. It requires an initialized working directory; use `terraform init -backend=false` first when you want validation without initializing the configured backend.
 * **`terraform test`**: Loads `.tftest.hcl` files and executes their `run` blocks and assertions to test root or reusable modules.
@@ -56,8 +56,18 @@ Because the `.plan` file is binary, you cannot open it in a text editor.
 
 ## Resource Targeting (`-target`)
 
+Resource targeting tells Terraform to focus a plan on a selected resource address and its dependencies, rather than considering all changes in the configuration. The `-target` option can be used with both `plan` and `apply`.
+
 * **`terraform plan -target=<resource_address>`**
 * **`terraform apply -target=<resource_address>`**
+
+For example, suppose a configuration manages an EC2 instance and an unrelated S3 bucket, and both have pending changes:
+
+```bash
+terraform plan -target=aws_instance.web
+```
+
+This command previews changes for `aws_instance.web` and any objects it depends on, such as its subnet or security group. It excludes the unrelated bucket's pending changes. Running `terraform apply` with the same `-target` option generates a targeted plan, asks for approval, and applies its proposed changes.
 
 HashiCorp recommends `-target` only for exceptional situations, such as recovering from an earlier error or when Terraform explicitly suggests it. It is not a routine deployment, performance, or troubleshooting strategy.
 

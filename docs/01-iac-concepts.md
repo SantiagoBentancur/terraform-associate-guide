@@ -117,6 +117,8 @@ Terraform uses a **declarative** approach: you describe the desired result inste
 * **Terraform State:** Maps resource addresses to real objects and stores metadata and known attributes. Terraform requires this mapping to know, for example, which EC2 instance belongs to `aws_instance.web`. State is Terraform's record—it is not the infrastructure itself.
 * **Remote Objects:** The infrastructure that actually exists in a provider system such as AWS.
 
+With the default local backend, Terraform stores this mapping in a file named `terraform.tfstate`. You should treat that file as Terraform-managed runtime data, not as configuration to edit or commit. Chapter 4 introduces the state file in detail and explains safer local and remote storage options.
+
 During `terraform plan`, Terraform normally asks providers to refresh information about managed objects and compares the real objects, prior state, and current configuration. It then proposes whether each object should be created, updated, replaced, destroyed, or left unchanged.
 
 ### Reading Terraform Plan Symbols

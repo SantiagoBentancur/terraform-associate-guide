@@ -1,12 +1,51 @@
 # Terraform State
 
-Remote state, backends, locking, workspaces, state commands, imports, and state refactoring.
+## What Terraform State Is
+
+Terraform state is Terraform's record of the infrastructure it manages. It maps resource addresses in the configuration to real objects and stores metadata and known attributes that Terraform needs for planning.
+
+For example, state can associate this configuration address:
+
+```text
+aws_instance.web
+```
+
+with a real object such as:
+
+```text
+EC2 instance i-0123456789abcdef0
+```
+
+Terraform compares the current configuration, the state, and the provider's view of the remote object during `terraform plan`. That comparison lets Terraform determine whether an object should be created, updated, replaced, destroyed, or left unchanged.
+
+State is different from configuration: `.tf` files describe the desired result, while state records Terraform's understanding of what it manages. State is also different from the remote object itself; it is Terraform's mapping and working record, not the infrastructure.
+
+State may contain sensitive values, so do not commit state files to Git or edit them manually. The rest of this chapter explains where state is stored, how teams protect and lock it, and how to inspect or refactor it safely.
+
+## Security Risk of Storing Terraform State in Git
+
+The Terraform state file is sensitive and should not be stored in Git.
+
+### Why State Is Sensitive
+`terraform.tfstate` may contain:
+* Resource IDs
+* IP addresses
+* Database endpoints
+* IAM role details
+* Secret values generated or returned by providers
+* Plaintext values from some sensitive resource attributes
+
+Even if your `.tf` files do not show a password directly, Terraform state may still contain the real value after creation.
+
+> **Golden Rule:** Terraform code can go in Git. Terraform state should go in a secure remote backend.
+
+---
 
 ## Terraform Backend
 
 A **backend** defines where Terraform stores its state and how Terraform performs state operations.
 
-By default, Terraform uses the **local backend**, which stores state in a local file:
+By default, Terraform uses the **local backend**, which stores state in a local file named:
 ```text
 terraform.tfstate
 ```
@@ -19,6 +58,42 @@ For real team projects, a remote backend is preferred.
 * Enables state locking, depending on backend
 * Improves security when combined with encryption and access control
 * Allows CI/CD systems to run Terraform against the same source of truth
+
+## State Locking
+
+State locking prevents two people or systems from modifying the same Terraform state at the same time. Terraform locks state automatically when the selected backend supports locking and locking is enabled where required.
+
+### Why Locking Matters
+
+Imagine two engineers both run `terraform apply` against the same infrastructure:
+
+* Engineer A creates a subnet.
+* Engineer B modifies the VPC at the same time.
+* Both commands try to update the same state.
+
+Without locking, the shared state could become inconsistent or corrupted.
+
+### What Happens During a Lock?
+
+When Terraform starts an operation that may modify state, it tries to acquire a lock:
+
+```text
+Acquiring state lock. This may take a few moments...
+```
+
+When the operation finishes, Terraform releases the lock.
+
+### Force Unlock
+
+If a Terraform run crashes and leaves a stale lock, you can manually unlock it:
+
+```bash
+terraform force-unlock <LOCK_ID>
+```
+
+> **Warning:** Only force-unlock when you are sure no other Terraform operation is still running.
+
+## Backend Configuration
 
 ### Backend Configuration Example
 ```hcl
@@ -83,35 +158,6 @@ terraform init -migrate-state
 ```
 
 Use `-reconfigure` when the state is already in the correct backend or when you intentionally do not want Terraform to copy existing state. Use `-migrate-state` when changing where the current state is stored. Review and back up important state before migrating it. These options are mutually exclusive.
-
----
-## State Locking
-
-State locking prevents two people or systems from modifying the same Terraform state at the same time. Terraform locks state automatically when the selected backend supports locking and locking is enabled where required.
-
-### Why Locking Matters
-Imagine two engineers both run `terraform apply` against the same infrastructure:
-* Engineer A creates a subnet.
-* Engineer B modifies the VPC at the same time.
-* Both commands try to update the same state.
-
-Without locking, the shared state could become inconsistent or corrupted.
-
-### What Happens During a Lock?
-When Terraform starts an operation that may modify state, it tries to acquire a lock:
-```text
-Acquiring state lock. This may take a few moments...
-```
-
-When the operation finishes, Terraform releases the lock.
-
-### Force Unlock
-If a Terraform run crashes and leaves a stale lock, you can manually unlock it:
-```bash
-terraform force-unlock <LOCK_ID>
-```
-
-> **Warning:** Only force-unlock when you are sure no other Terraform operation is still running.
 
 ---
 

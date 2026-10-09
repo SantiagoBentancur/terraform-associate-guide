@@ -191,7 +191,7 @@ The same constraint operators shown above work with `required_version`. Version 
 
 The dependency lock file records the exact provider versions selected by Terraform and the checksums used to verify downloaded provider packages.
 
-It locks provider selections, not remote module versions. Module versions are selected from each module block's `version` argument or source reference. Modules are explained in [Terraform Modules](05-modules.md#terraform-modules).
+It locks provider selections, not remote module versions. Module versions are selected from each module block's `version` argument or source reference. Modules are explained in [Terraform Modules](06-modules.md#terraform-modules).
 
 Terraform creates or updates it during initialization:
 
@@ -352,7 +352,7 @@ Terraform combines all `.tf` files in one working directory into a single config
 
 > **Note:** The `backend.tf` filename is an organizational convention. Terraform reads all `.tf` files in the working directory together.
 
-Terraform creates `terraform.tfstate` automatically when the default local backend records state. It is runtime data rather than a configuration file that you create or organize manually. Do not edit it by hand. Remote backends store state in their configured remote location instead of relying on this local state file.
+Terraform creates `terraform.tfstate` automatically when the default local backend records state. It is runtime data rather than a configuration file that you create or organize manually. Do not edit it by hand. Remote backends store state in their configured remote location instead of relying on this local state file. See [What Terraform State Is](04-state.md#what-terraform-state-is) for the conceptual and operational details.
 
 <details>
 <summary><strong>Expand the complete multi-file example</strong></summary>
@@ -457,7 +457,7 @@ Terraform supports three different syntax styles for comments:
 
 While primitive types (`string`, `number`, `bool`) are simple, advanced deployments require complex structural types.
 
-* **`set`:** A collection of unique, unordered values. Unlike a `list`, a set cannot contain duplicate items and does not support numeric indexing such as `[0]`. The `toset()` function converts another collection to a set. [`for_each` vs. `count`](06-configuration.md#advanced-looping-for_each-vs-count) shows how sets work with `for_each`.
+* **`set`:** A collection of unique, unordered values. Unlike a `list`, a set cannot contain duplicate items and does not support numeric indexing such as `[0]`. The `toset()` function converts another collection to a set. [`for_each` vs. `count`](05-configuration.md#advanced-looping-for_each-vs-count) shows how sets work with `for_each`.
 * **`object`:** A structural type with named attributes that may each have a different type. Its type constraint acts like a schema for the accepted attributes.
 
 ```hcl
@@ -491,6 +491,27 @@ resource "terraform_data" "deployment" {
   input = var.deployment_name
 }
 ```
+
+### Assigning Input Values Through Environment Variables
+
+Terraform reads environment variables named `TF_VAR_<name>` to supply values to input variables declared in the root module. The part after `TF_VAR_` must match the Terraform variable name exactly.
+
+Using the `deployment_name` variable declared above, run these commands in Bash:
+
+```bash
+export TF_VAR_deployment_name="api"
+terraform plan
+```
+
+`export` makes the value available to programs started from that shell, including Terraform. Terraform reads `TF_VAR_deployment_name` and uses `"api"` for `var.deployment_name`, unless a higher-precedence source supplies another value. The environment variable supplies a value; you still need the `variable "deployment_name"` declaration in your `.tf` configuration.
+
+The exported value remains available to subsequent commands in that shell until you change it, remove it, or close the shell. Remove it when you finish:
+
+```bash
+unset TF_VAR_deployment_name
+```
+
+The following section explains which value wins when several sources supply the same input variable.
 
 ### Variable Assignment Precedence (Lowest to Highest)
 
@@ -528,6 +549,6 @@ Each output has a local name and a `value` argument. The `value` can reference i
 
 After an apply, Terraform displays the declared outputs. You can query them later with `terraform output`, explained in [Querying Outputs](03-core-workflow.md#querying-outputs).
 
-> **Important:** An output is not automatically secret. Mark sensitive output values with `sensitive = true`, as explained in [Sensitive Input Variables and Outputs](06-configuration.md#sensitive-input-variables-and-outputs).
+> **Important:** An output is not automatically secret. Mark sensitive output values with `sensitive = true`, as explained in [Sensitive Input Variables and Outputs](05-configuration.md#sensitive-input-variables-and-outputs).
 
 ---

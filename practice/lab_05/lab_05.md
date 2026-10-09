@@ -39,7 +39,7 @@ terraform plan
 
 ## Prerequisites
 
-* Review [`for_each`](../../README.md#the-for_each-solution), [`for` Expressions](../../README.md#for-expressions), [Local Values](../../README.md#local-values-locals), and [String and Conversion Functions](../../README.md#string-and-conversion-functions).
+* Review [`for_each`](../../docs/05-configuration.md#the-for_each-solution), [`for` Expressions](../../docs/05-configuration.md#for-expressions), [Local Values](../../docs/05-configuration.md#local-values-locals), and [String and Conversion Functions](../../docs/05-configuration.md#string-and-conversion-functions).
 * Configure AWS credentials with permission to create and delete VPCs.
 
 > **Cost Warning:** This lab creates two VPCs. The `development` experiment is plan-only and must not be applied.

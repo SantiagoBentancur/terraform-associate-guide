@@ -43,7 +43,7 @@ terraform plan
 
 ## Prerequisites
 
-* Review [Terraform Backend](../../README.md#terraform-backend), [State Locking](../../README.md#state-locking), [S3 Backend](../../README.md#s3-backend), and [Terraform Workspaces](../../README.md#terraform-workspaces-environment-management).
+* Review [Terraform Backend](../../docs/04-state.md#terraform-backend), [State Locking](../../docs/04-state.md#state-locking), [S3 Backend](../../docs/04-state.md#s3-backend), and [Terraform Workspaces](../../docs/04-state.md#terraform-workspaces-environment-management).
 * Configure AWS credentials with permission to manage an S3 bucket and its objects.
 
 > **Safety Warning:** Terraform state can contain sensitive data. The state bucket must never be public.
