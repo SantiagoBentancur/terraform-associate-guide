@@ -22,13 +22,11 @@ The labs are complete. The larger architecture checkpoints remain ongoing and wi
 | Lab 0 | Introductory | [Lab 0](practice/lab_00/lab_00.md) |
 | Checkpoint 1 | Ongoing | [Checkpoint 1](practice/checkpoint_01/checkpoint_01.md) |
 | Checkpoint 2 | Ongoing | [Checkpoint 2](practice/checkpoint_02/checkpoint_02.md) |
-| Mock exams | Drafts for review | [Three original practice sets](mock-exams/README.md) |
 
 ## Start here
 
 - [Study guide and topic index](docs/README.md) — read chapters in order or jump directly to a concept.
 - [Practical Exercises](practice/README.md) — labs and architecture checkpoints.
-- [Mock exams](mock-exams/README.md) — original, unofficial practice questions and explained answers.
 - [Repository structure](#repository-structure) — where to find each type of content.
 
 ## Repository structure
@@ -50,7 +48,6 @@ The labs are complete. The larger architecture checkpoints remain ongoing and wi
 │   ├── README.md
 │   ├── lab_00/ through lab_16/
 │   └── checkpoint_01/ and checkpoint_02/
-├── mock-exams/                  # Original practice exams and answer keys
 └── assets/                      # Shared diagrams and images
 ```
 
