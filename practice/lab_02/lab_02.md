@@ -39,7 +39,7 @@ terraform plan
 
 ## Prerequisites
 
-* Review [`count`](../../README.md#the-count-meta-argument), [Data Sources](../../README.md#data-sources-data-blocks), and [String and Conversion Functions](../../README.md#string-and-conversion-functions).
+* Review [`count`](../../docs/05-configuration.md#the-count-meta-argument), [Data Sources](../../docs/05-configuration.md#data-sources-data-blocks), and [String and Conversion Functions](../../docs/05-configuration.md#string-and-conversion-functions).
 * Configure AWS credentials with permission to create and delete S3 buckets.
 
 > **Cleanup Warning:** S3 bucket names use a global namespace. Destroy every empty lab bucket when finished.

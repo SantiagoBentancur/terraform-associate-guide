@@ -210,7 +210,7 @@ From lower to higher precedence:
 3. `terraform.tfvars`
 4. Explicit `-var-file` and `-var` options, processed in command-line order
 
-Terraform also supports `terraform.tfvars.json` and automatically loaded `*.auto.tfvars` files, which are explained in Section 10 of the main README.
+Terraform also supports `terraform.tfvars.json` and automatically loaded `*.auto.tfvars` files, which are explained in [Variable Assignment Precedence](../../docs/02-terraform-basics.md#variable-assignment-precedence-lowest-to-highest).
 
 ## Cleanup
 

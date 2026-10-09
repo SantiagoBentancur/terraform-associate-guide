@@ -16,7 +16,7 @@ Strengthen normal Terraform expression operations for exam preparation. Use only
 
 ## Prerequisites
 
-* Review [Collection Functions](../../README.md#collection-functions), [String and Conversion Functions](../../README.md#string-and-conversion-functions), [`for` Expressions](../../README.md#for-expressions), and [Local Values](../../README.md#local-values-locals).
+* Review [Collection Functions](../../docs/05-configuration.md#collection-functions), [String and Conversion Functions](../../docs/05-configuration.md#string-and-conversion-functions), [`for` Expressions](../../docs/05-configuration.md#for-expressions), and [Local Values](../../docs/05-configuration.md#local-values-locals).
 
 > **No-Cost Lab:** This exercise evaluates local values and expressions only. It does not configure a provider or create remote infrastructure.
 
