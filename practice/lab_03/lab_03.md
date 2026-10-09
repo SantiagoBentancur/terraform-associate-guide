@@ -39,7 +39,7 @@ terraform plan
 
 ## Prerequisites
 
-* Review [Conditional Expressions](../../README.md#conditional-expressions), [String and Conversion Functions](../../README.md#string-and-conversion-functions), and [`count`](../../README.md#the-count-meta-argument).
+* Review [Conditional Expressions](../../docs/05-configuration.md#conditional-expressions), [String and Conversion Functions](../../docs/05-configuration.md#string-and-conversion-functions), and [`count`](../../docs/05-configuration.md#the-count-meta-argument).
 * Configure AWS credentials with permission to create and terminate EC2 instances.
 
 > **Cost Warning:** This lab creates one EC2 instance by default and can create two in production mode. Complete cleanup using the same input values as the applied configuration.

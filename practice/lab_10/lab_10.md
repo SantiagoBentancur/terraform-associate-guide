@@ -40,7 +40,7 @@ terraform plan
 
 ## Prerequisites
 
-* Review [Provisioners](../../README.md#provisioners-the-last-resort).
+* Review [Provisioners](../../docs/05-configuration.md#provisioners-the-last-resort).
 * Configure AWS credentials with EC2 and security-group permissions.
 * Confirm that `us-east-1` has a default VPC and subnet.
 * Prepare an EC2 key pair for `us-east-1` and keep its private key outside the repository.

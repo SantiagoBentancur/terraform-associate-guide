@@ -43,7 +43,7 @@ terraform plan
 
 ## Prerequisites
 
-* Review [Multiple Provider Configurations](../../README.md#multiple-provider-configurations) and [The Provider Rule](../../README.md#the-provider-rule-exam-trap).
+* Review [Multiple Provider Configurations](../../docs/02-terraform-basics.md#multiple-provider-configurations) and [The Provider Rule](../../docs/06-modules.md#the-provider-rule-exam-trap).
 * Configure AWS credentials that can describe Availability Zones in `us-east-1` and `us-west-2`.
 
 This lab reads AWS metadata and creates no remote resources.
@@ -72,7 +72,7 @@ Build the root and child module files in the order shown below. Do not open or c
 
 The root module owns the concrete AWS Regions and credentials. The reusable child module declares two provider names for its regional queries, and the caller decides which configured AWS provider each name receives.
 
-A provider requirement selects a plugin and version source. A `provider` block configures one instance of that plugin. A reusable child module declares requirements and expected aliases but receives concrete configurations from its caller. Review the provider-alias and module-mapping explanations in the main README before starting Part 1.
+A provider requirement selects a plugin and version source. A `provider` block configures one instance of that plugin. A reusable child module declares requirements and expected aliases but receives concrete configurations from its caller. Review [Multiple Provider Configurations](../../docs/02-terraform-basics.md#multiple-provider-configurations) and [The Provider Rule](../../docs/06-modules.md#the-provider-rule-exam-trap) before starting Part 1.
 
 </details>
 

@@ -40,7 +40,7 @@ terraform plan
 
 ## Prerequisites
 
-* Review [Complex Data Types](../../README.md#complex-data-types-object-and-set), [Collection Functions](../../README.md#collection-functions), [String and Conversion Functions](../../README.md#string-and-conversion-functions), and [`count`](../../README.md#the-count-meta-argument).
+* Review [Complex Data Types](../../docs/02-terraform-basics.md#complex-data-types-object-and-set), [Collection Functions](../../docs/05-configuration.md#collection-functions), [String and Conversion Functions](../../docs/05-configuration.md#string-and-conversion-functions), and [`count`](../../docs/05-configuration.md#the-count-meta-argument).
 * Configure AWS credentials with permission to create and delete VPCs.
 
 > **Cleanup Warning:** This lab creates VPCs. Do not add subnets or other dependent objects outside Terraform while performing the exercise.

@@ -39,7 +39,7 @@ terraform plan
 
 ## Prerequisites
 
-* Review [Dynamic Blocks](../../README.md#dynamic-blocks).
+* Review [Dynamic Blocks](../../docs/05-configuration.md#dynamic-blocks).
 * Configure AWS credentials with permission to create and delete IAM policies.
 
 > **Security Note:** This lab creates a customer-managed IAM policy, but it does not attach the policy to a user, group, or role. Therefore, it grants no permissions by itself.

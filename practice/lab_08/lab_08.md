@@ -44,7 +44,7 @@ terraform plan
 
 ## Prerequisites
 
-* Review [Input Variable Validation](../../README.md#input-variable-validation), [Custom Conditions](../../README.md#custom-conditions-precondition--postcondition), [`for_each` vs. `count`](../../README.md#advanced-looping-for_each-vs-count), and [`for` Expressions](../../README.md#for-expressions).
+* Review [Input Variable Validation](../../docs/05-configuration.md#input-variable-validation), [Custom Conditions](../../docs/05-configuration.md#custom-conditions-precondition--postcondition), [`for_each` vs. `count`](../../docs/05-configuration.md#advanced-looping-for_each-vs-count), and [`for` Expressions](../../docs/05-configuration.md#for-expressions).
 * Configure AWS credentials with permission to create, tag, and delete IAM users.
 
 > **Security and Cleanup Warning:** This lab creates IAM identities in the AWS account. It does not create login profiles, access keys, or policy attachments, so the users receive no permissions from this lab. Review the plan carefully and destroy the users when you finish.

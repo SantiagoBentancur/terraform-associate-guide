@@ -42,7 +42,7 @@ terraform plan
 
 ## Prerequisites
 
-* Review [The `lifecycle` Meta-Argument](../../README.md#the-lifecycle-meta-argument), [Saving and Inspecting Execution Plans](../../README.md#saving-and-inspecting-execution-plans), and [State Refactoring](../../README.md#state-refactoring-moved-blocks).
+* Review [The `lifecycle` Meta-Argument](../../docs/05-configuration.md#the-lifecycle-meta-argument), [Saving and Inspecting Execution Plans](../../docs/03-core-workflow.md#saving-and-inspecting-execution-plans), and [State Refactoring](../../docs/04-state.md#state-refactoring-moved-blocks).
 * Configure AWS credentials with permission to create and delete S3 buckets.
 
 > **Cleanup Warning:** The protected bucket cannot be destroyed until you remove its `prevent_destroy` rule.

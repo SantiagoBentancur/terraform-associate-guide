@@ -50,7 +50,7 @@ resource "aws_s3_bucket_public_access_block" "public_access_s3_backend" {
 }
 
 
-output "backend_name" {
+output "state_bucket_name" {
   value = aws_s3_bucket.s3_backend.id
 }
 

@@ -41,7 +41,7 @@ terraform plan
 
 ## Prerequisites
 
-* Review [Custom Conditions](../../README.md#custom-conditions-precondition--postcondition) and [Check Blocks](../../README.md#check-blocks-and-continuous-validation).
+* Review [Custom Conditions](../../docs/05-configuration.md#custom-conditions-precondition--postcondition) and [Check Blocks](../../docs/05-configuration.md#check-blocks-and-continuous-validation).
 * Use Terraform 1.5 or later.
 
 This lab creates only a local `terraform_data` state record.

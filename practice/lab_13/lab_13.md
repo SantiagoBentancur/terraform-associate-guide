@@ -41,7 +41,7 @@ terraform plan
 
 ## Prerequisites
 
-* Review [Terraform Import](../../README.md#terraform-import), [State Refactoring](../../README.md#state-refactoring-moved-blocks), and [Removed Blocks](../../README.md#removed-blocks).
+* Review [Terraform Import](../../docs/04-state.md#terraform-import), [State Refactoring](../../docs/04-state.md#state-refactoring-moved-blocks), and [Removed Blocks](../../docs/04-state.md#removed-blocks).
 * Use Terraform 1.7 or later.
 * Configure the AWS CLI and Terraform AWS credentials with S3 permissions.
 
