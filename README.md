@@ -4,6 +4,8 @@
 
 My learning philosophy is simple: I learn best by doing. After passing the Terraform Associate exam, I created this project to turn certification knowledge into hands-on infrastructure experience and develop a deeper understanding through experimentation.
 
+The labs use AWS to turn Terraform concepts into practical infrastructure experience, helping readers learn both Terraform and the AWS services they configure.
+
 By sharing what I learn, I hope to contribute something useful to the community and help others practice Terraform. Feedback, corrections, and suggestions are always welcome.
 
 The goal is not to present a finished course or claim that every section is final; **it is a transparent record of deliberate, ongoing practice.**
